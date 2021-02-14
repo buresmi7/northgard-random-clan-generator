@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://unpkg.com/jquery.terminal/js/jquery.terminal.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/jquery.terminal/css/jquery.terminal.min.css"/>
+</head>
+<body>
+<script>
+    const greetings = `Welcome to Northgard clan random generator. \n\nCommands examples:\nplay Mike,Jake\n\n`
+    const originalClans = [
+        'Wolf',
+        'Stag',
+        'Goat',
+        'Raven',
+        'Bear',
+        'Boar',
+        'Snake',
+        'Horse',
+        'Dragon',
+        'Kraken',
+        'Ox',
+        'Lynx',
+    ]
+
+    const getRandomClan = (clans) => {
+        return clans[Math.floor(Math.random() * clans.length)]
+    }
+
+    $('body').terminal({
+        play: function (arg1) {
+            const names = arg1.split(',')
+            names.forEach(name => {
+                const clan = getRandomClan(originalClans)
+                this.echo(`[[;green;]${name}] will play as the [[;red;]${clan}]`)
+            })
+            this.echo(`\n`)
+        },
+        playno: function (arg1, arg2) {
+            const noClans = arg2.split(',')
+            try {
+                noClans.forEach(clan => {
+                    if (!originalClans.includes(clan)) {
+                        throw new Error(`Bad name of clan '${clan}'`)
+                    }
+                })
+            } catch (e) {
+                if (e.message.includes('Bad name of clan')) {
+                    this.error(`${e.message}, possible values are ${clans.join(', ')}\n`)
+                    return
+                }
+                throw e;
+            }
+
+            const finalClans = originalClans.filter(value => !noClans.includes(value));
+
+            const names = arg1.split(',')
+            names.forEach(name => {
+                const clan = getRandomClan(finalClans)
+                this.echo(`[[;green;]${name}] will play as the [[;red;]${clan}]`)
+            })
+            this.echo(`\n`)
+        },
+    }, {
+        greetings,
+    });
+</script>
+</body>
+</html>
